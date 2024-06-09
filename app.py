@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root123@localhost:3306/message'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://pvnzcmrtgj:Q6K1zJgc$buc77gv@f-server/f-database'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/0'
 app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
