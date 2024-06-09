@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Async Message</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="wrapper">
+        <form id="async-form" class="form" action="{{ url_for('submit_async_message') }}" method="post">
+            <div class="form__title">Submit an Async Message</div>
+            <div class="form__group form__side form__side--inputs">
+                <label for="name">Name:</label>
+                <input class="form__input" type="text" id="name" name="name" placeholder="Enter your name">
+            </div>
+            <div class="form__group form__side form__side--inputs">
+                <label for="subject">Subject:</label>
+                <input class="form__input" type="text" id="subject" name="subject" placeholder="Enter the subject">
+            </div>
+            <div class="form__group form__side form__side--inputs">
+                <label for="message">Message:</label>
+                <textarea class="form__input" id="message" name="message" placeholder="Enter your message"></textarea>
+            </div>
+            <div class="form__group">
+                <button id="submit-btn" class="form__button" type="button">Submit</button>
+            </div>
+            <div class="form__group">
+                <a class="form__button form__button--home" href="{{ url_for('index') }}">Back to Home</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.getElementById('async-form');
+            var submitButton = document.getElementById('submit-btn');
+
+            submitButton.addEventListener('click', function() {
+                var formData = new FormData(form);
+                var xhr = new XMLHttpRequest();
+
+                xhr.open('POST', form.action, true);
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                        console.log(xhr.responseText);
+                    } else {
+                    }
+                };
+
+                xhr.send(formData);
+            });
+        });
+    </script>
+</body>
+</html>
