@@ -69,6 +69,9 @@ def show_sync_form():
 def show_async_form():
     return render_template('async_form.html')
 
+
+
 if __name__ == '__main__':
-    db.create_all()
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)

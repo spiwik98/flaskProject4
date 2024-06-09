@@ -23,7 +23,7 @@
                 <textarea class="form__input" id="message" name="message" placeholder="Enter your message"></textarea>
             </div>
             <div class="form__group">
-                <button id="submit-btn" class="form__button" type="button">Submit</button>
+                <button id="submit-btn" class="form__button" type="submit">Submit</button>
             </div>
             <div class="form__group">
                 <a class="form__button form__button--home" href="{{ url_for('index') }}">Back to Home</a>
@@ -34,9 +34,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var form = document.getElementById('async-form');
-            var submitButton = document.getElementById('submit-btn');
 
-            submitButton.addEventListener('click', function() {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
                 var formData = new FormData(form);
                 var xhr = new XMLHttpRequest();
 
@@ -46,6 +46,7 @@
                     if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                         console.log(xhr.responseText);
                     } else {
+                        console.log('Error occurred during form submission');
                     }
                 };
 
@@ -55,3 +56,4 @@
     </script>
 </body>
 </html>
+
