@@ -2,8 +2,6 @@ from celery import Celery
 from flask import Flask, render_template, request, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
 
-
-
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root123@localhost:3306/message'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -12,9 +10,24 @@ app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost:6379/0'
 
 db = SQLAlchemy(app)
 
+def make_celery(app):
+    celery = Celery(
+        app.import_name,
+        broker=app.config['CELERY_BROKER_URL'],
+        backend=app.config['CELERY_RESULT_BACKEND']
+    )
+    celery.conf.update(app.config)
+    TaskBase = celery.Task
 
-celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-celery.conf.update(app.config)
+    class ContextTask(TaskBase):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
+
+celery = make_celery(app)
 
 class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -40,12 +53,18 @@ def submit_sync_message():
 
 @app.route('/submit_async_message', methods=['POST'])
 def submit_async_message():
-    name = request.form['name']
-    subject = request.form['subject']
-    message = request.form['message']
+    try:
+        name = request.form['name']
+        subject = request.form['subject']
+        message = request.form['message']
 
-    save_message.delay(name, subject, message)
-    return redirect(url_for('index'))
+        print(f"Received async message: name={name}, subject={subject}, message={message}")  # Logging received data
+
+        save_message.delay(name, subject, message)
+        return "Message submitted successfully", 200
+    except Exception as e:
+        print(f"Error: {e}")  # Logging error
+        return "There was an issue with your submission", 500
 
 
 @celery.task
@@ -68,7 +87,6 @@ def show_sync_form():
 @app.route('/async_form')
 def show_async_form():
     return render_template('async_form.html')
-
 
 
 if __name__ == '__main__':

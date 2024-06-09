@@ -31,29 +31,38 @@
         </form>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            var form = document.getElementById('async-form');
+ <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('async-form');
 
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
-                var formData = new FormData(form);
-                var xhr = new XMLHttpRequest();
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the default form submission
+            console.log("Form submission prevented.");
 
-                xhr.open('POST', form.action, true);
-                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+            var formData = new FormData(form);
+            var xhr = new XMLHttpRequest();
+
+            xhr.open('POST', form.action, true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        console.log("Form submitted successfully.");
                         console.log(xhr.responseText);
+                        window.location.href = "{{ url_for('index') }}"; // Redirect to index page
                     } else {
-                        console.log('Error occurred during form submission');
+                        console.log("Error occurred during form submission.");
+                        console.log("Status:", xhr.status);
+                        console.log("Response:", xhr.responseText);
                     }
-                };
+                }
+            };
 
-                xhr.send(formData);
-            });
+            console.log("Sending form data...");
+            xhr.send(formData);
         });
-    </script>
+    });
+</script>
+
 </body>
 </html>
-
